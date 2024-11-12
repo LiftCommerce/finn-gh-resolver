@@ -144,15 +144,19 @@ def make_commit(repo_dir: str, issue: GithubIssue, issue_type: str) -> None:
     )
 
     if not result.stdout.strip():
-        # If username is not set, configure git
+        # Get bot username and email from environment variables, with fallbacks
+        bot_username = os.getenv('BOT_USERNAME', 'finn')
+        bot_email = os.getenv('BOT_EMAIL', f'{bot_username}@users.noreply.github.com')
+        
+        # Configure git with bot identity
         subprocess.run(
-            f'git -C {repo_dir} config user.name "openhands" && '
-            f'git -C {repo_dir} config user.email "openhands@all-hands.dev" && '
+            f'git -C {repo_dir} config user.name "{bot_username}" && '
+            f'git -C {repo_dir} config user.email "{bot_email}" && '
             f'git -C {repo_dir} config alias.git "git --no-pager"',
             shell=True,
             check=True,
         )
-        print("Git user configured as openhands")
+        print(f"Git user configured as {bot_username}")
     
     result = subprocess.run(
         f"git -C {repo_dir} add .", shell=True, capture_output=True, text=True
@@ -170,7 +174,16 @@ def make_commit(repo_dir: str, issue: GithubIssue, issue_type: str) -> None:
 
     if not status_result.stdout.strip():
         print(f"No changes to commit for issue #{issue.number}. Skipping commit.")
-        raise RuntimeError("ERROR: Openhands failed to make code changes.")
+        raise RuntimeError("ERROR: Failed to make code changes.")
+
+    commit_message = f"Fix {issue_type} #{issue.number}: {issue.title}"
+    result = subprocess.run(
+        ["git", "-C", repo_dir, "commit", "-m", commit_message],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"Failed to commit changes: {result}")
 
 
     commit_message = f"Fix {issue_type} #{issue.number}: {issue.title}"
