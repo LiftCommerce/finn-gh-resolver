@@ -24,6 +24,8 @@ on:
         required: true
       FINN_BOT_USERNAME:
         required: true
+      BOT_EMAIL:
+        required: true
 
   issues:
     types: [labeled]
