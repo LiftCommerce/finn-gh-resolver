@@ -145,8 +145,8 @@ def make_commit(repo_dir: str, issue: GithubIssue, issue_type: str) -> None:
 
     if not result.stdout.strip():
         # Get bot username and email from environment variables, with fallbacks
-        bot_username = os.getenv('BOT_USERNAME', 'finn')
-        bot_email = os.getenv('BOT_EMAIL', f'{bot_username}@users.noreply.github.com')
+        bot_username = os.getenv('BOT_USERNAME', 'fintiv-ai')
+        bot_email = os.getenv('BOT_EMAIL', 'james.troutman+finn@fintiv.global')
         
         # Configure git with bot identity
         subprocess.run(
