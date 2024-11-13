@@ -149,6 +149,12 @@ jobs:
           else
             python -m pip install --upgrade -r requirements.txt
           fi
+          
+      - name: Set Git Author
+        run: |
+          git config --global user.name "${{ secrets.FINN_BOT_USERNAME }}"
+          git config --global user.email "${{ secrets.BOT_EMAIL }}"
+          git config --global alias.git "git --no-pager"
 
       - name: Attempt to resolve issue
         env:
